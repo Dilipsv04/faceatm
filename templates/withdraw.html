@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw - SecureFace ATM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff9966, #ff5e62);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 40px;
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            box-shadow: none;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #ff5e62, #ff9966);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        h1, label {
+            color: white;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+        .quick-amount {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+        .quick-amount:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+        }
+        .quick-amount h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .pin-input {
+            letter-spacing: 0.5em;
+            text-align: center;
+            font-weight: bold;
+        }
+        .navbar {
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('dashboard') }}">
+                <i class="fas fa-university me-2"></i>SecureFace ATM
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show mb-4" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h1 class="mb-4 text-center">Withdraw Cash</h1>
+        
+        <div class="card">
+            <h4 class="mb-4">Quick Withdrawal</h4>
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-6">
+                    <div class="quick-amount" onclick="setAmount(20)">
+                        <h3>₹20</h3>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="quick-amount" onclick="setAmount(40)">
+                        <h3>₹40</h3>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="quick-amount" onclick="setAmount(60)">
+                        <h3>₹60</h3>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="quick-amount" onclick="setAmount(80)">
+                        <h3>₹80</h3>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="quick-amount" onclick="setAmount(100)">
+                        <h3>₹100</h3>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="quick-amount" onclick="setAmount(150)">
+                        <h3>₹150</h3>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="quick-amount" onclick="setAmount(200)">
+                        <h3>₹200</h3>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="quick-amount" onclick="setAmount(300)">
+                        <h3>₹300</h3>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mb-3">Custom Amount</h4>
+            <form action="{{ url_for('withdraw') }}" method="post">
+                <div class="mb-3">
+                    <label for="amount" class="form-label">Amount to Withdraw (₹)</label>
+                    <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0.01" required>
+                </div>
+                <div class="mb-4">
+                    <label for="pin" class="form-label">Confirm PIN</label>
+                    <input type="password" class="form-control pin-input" id="pin" name="pin" maxlength="4" required>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Withdraw</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        function setAmount(value) {
+            document.getElementById('amount').value = value;
+        }
+    </script>
+</body>
+</html>

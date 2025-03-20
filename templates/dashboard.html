@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATM Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .balance-card {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            color: white;
+            border: none;
+            transition: transform 0.3s;
+        }
+        .balance-card:hover {
+            transform: translateY(-5px);
+        }
+        .action-card {
+            transition: all 0.3s;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .action-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.25);
+        }
+        .transaction-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .transaction-card {
+            background: rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .withdraw {
+            color: #ff7675;
+        }
+        .deposit {
+            color: #00b894;
+        }
+        .send {
+            color: #fdcb6e;
+        }
+        .receive {
+            color: #00cec9;
+        }
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        .logout-btn {
+            background: linear-gradient(45deg, #FF5370, #ff869a);
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            color: white;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 83, 112, 0.4);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .navbar {
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('dashboard') }}">
+                <i class="fas fa-university me-2"></i>SecureFace ATM
+            </a>
+            <div class="d-flex align-items-center">
+                <span class="me-3">Welcome, {{ username }}</span>
+                <a href="{{ url_for('logout') }}" class="logout-btn btn">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card balance-card p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Current Balance</h6>
+                            <h2 class="mb-0 mt-2">₹{{ "%.2f"|format(balance) }}</h2>
+                        </div>
+                        <div>
+                            <i class="fas fa-wallet fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <a href="{{ url_for('withdraw') }}" class="text-decoration-none">
+                    <div class="card action-card text-center p-4">
+                        <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                        <h5>Withdraw</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{{ url_for('deposit') }}" class="text-decoration-none">
+                    <div class="card action-card text-center p-4">
+                        <i class="fas fa-coins fa-3x mb-3"></i>
+                        <h5>Deposit</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{{ url_for('send') }}" class="text-decoration-none">
+                    <div class="card action-card text-center p-4">
+                        <i class="fas fa-paper-plane fa-3x mb-3"></i>
+                        <h5>Send Money</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{{ url_for('check_balance') }}" class="text-decoration-none">
+                    <div class="card action-card text-center p-4">
+                        <i class="fas fa-search-dollar fa-3x mb-3"></i>
+                        <h5>Check Balance</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card p-4">
+                    <h4 class="mb-4">Recent Transactions</h4>
+                    {% if transactions %}
+                        <div class="transaction-list">
+                            {% for transaction in transactions %}
+                                <div class="transaction-card p-3">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            {% if transaction.type == 'deposit' %}
+                                                <span class="badge bg-success">Deposit</span>
+                                            {% elif transaction.type == 'withdraw' %}
+                                                <span class="badge bg-danger">Withdraw</span>
+                                            {% elif transaction.type == 'send' %}
+                                                <span class="badge bg-warning">Sent to {{ transaction.recipient }}</span>
+                                            {% elif transaction.type == 'receive' %}
+                                                <span class="badge bg-info">Received from {{ transaction.recipient }}</span>
+                                            {% endif %}
+                                            <span class="ms-2 small">{{ transaction.timestamp }}</span>
+                                        </div>
+
+                                        <div>
+                                            {% if transaction.type == 'deposit' or transaction.type == 'receive' %}
+                                                <span class="deposit">+₹{{ "%.2f"|format(transaction.amount) }}</span>
+                                            {% else %}
+                                                <span class="withdraw">-₹{{ "%.2f"|format(transaction.amount) }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center">No recent transactions.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>

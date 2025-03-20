@@ -1,0 +1,43 @@
+{
+    "dilip1": {
+        "pin": "1234",
+        "balance": 40.0,
+        "transactions": [
+            {
+                "type": "deposit",
+                "amount": 100.0,
+                "timestamp": "2025-03-20T06:30:38.626543"
+            },
+            {
+                "type": "withdraw",
+                "amount": 40.0,
+                "timestamp": "2025-03-20T06:30:52.449946"
+            },
+            {
+                "type": "send",
+                "amount": 20.0,
+                "timestamp": "2025-03-20T06:41:39.243968",
+                "recipient": "bharath"
+            }
+        ],
+        "created_at": "2025-03-20T06:27:21.020344"
+    },
+    "bharath": {
+        "pin": "7344",
+        "balance": 120.0,
+        "transactions": [
+            {
+                "type": "receive",
+                "amount": 20.0,
+                "timestamp": "2025-03-20T06:41:39.263397",
+                "recipient": "dilip1"
+            },
+            {
+                "type": "deposit",
+                "amount": 100.0,
+                "timestamp": "2025-03-20T06:49:48.161228"
+            }
+        ],
+        "created_at": "2025-03-20T06:31:47.557951"
+    }
+}

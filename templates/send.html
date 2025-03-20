@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureATM - Send Money</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea, #764ba2);
+            --secondary-gradient: linear-gradient(135deg, #6a11cb, #2575fc);
+            --success-gradient: linear-gradient(120deg, #84fab0, #8fd3f4);
+            --danger-gradient: linear-gradient(120deg, #ff9a9e, #fad0c4);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: var(--primary-gradient);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 16px;
+            margin: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            background: #fff;
+        }
+        
+        .btn {
+            width: 100%;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-back {
+            background: var(--danger-gradient);
+        }
+        
+        .icon {
+            font-size: 18px;
+        }
+        
+        .send-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+            display: block;
+            text-align: center;
+        }
+        
+        .info-text {
+            background: #f0f9ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .flashes {
+            list-style-type: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+        
+        .flashes li {
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .flashes li.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .flashes li.danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .flashes li.warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .flashes li.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .recipient-highlight {
+            background: linear-gradient(120deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px dashed #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <i class="fas fa-paper-plane send-icon"></i>
+            <h1>Send Money</h1>
+            <p>Transfer funds to another user</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        
+        <div class="info-text">
+            <i class="fas fa-info-circle"></i> To send money, enter the recipient's username, amount, and confirm with your PIN.
+        </div>
+        
+        <form action="{{ url_for('send') }}" method="post">
+            <div class="form-group">
+                <label for="recipient">Recipient Username</label>
+                <input type="text" id="recipient" name="recipient" class="form-control" placeholder="Enter recipient's username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="amount">Amount (₹)</label>
+                <input type="number" id="amount" name="amount" class="form-control" placeholder="Enter amount" step="0.01" min="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="pin">PIN</label>
+                <input type="password" id="pin" name="pin" class="form-control" placeholder="Enter your PIN" required maxlength="4" pattern="[0-9]{4}">
+            </div>
+            
+            <button type="submit" class="btn">
+                <i class="fas fa-paper-plane icon"></i> Send Money
+            </button>
+            
+            <a href="{{ url_for('dashboard') }}" class="btn btn-back">
+                <i class="fas fa-arrow-left icon"></i> Back to Dashboard
+            </a>
+        </form>
+    </div>
+
+    <script>
+        // Add recipient highlight effect when user inputs a username
+        const recipientInput = document.getElementById('recipient');
+        recipientInput.addEventListener('change', function() {
+            const value = this.value.trim();
+            if (value) {
+                this.parentElement.classList.add('recipient-highlight');
+            } else {
+                this.parentElement.classList.remove('recipient-highlight');
+            }
+        });
+    </script>
+</body>
+</html>
